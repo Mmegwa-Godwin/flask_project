@@ -1,0 +1,301 @@
+ body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        nav .brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #1e90ff;
+            text-decoration: none;
+        }
+        nav .nav-links a {
+            margin: 0 1rem;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        nav .cart {
+            position: relative;
+            display: inline-block;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: #ff4757;
+            color: white;
+            border-radius: 50%;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* Search */
+        .search-bar input {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+            width: 200px;
+        }
+
+
+.home-banner {
+    text-align: center;
+    margin: 50px 0;
+}
+
+.home-banner h1 {
+    font-size: 3rem;
+}
+
+.home-banner .btn {
+    margin-top: 20px;
+    font-size: 1.2rem;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+.product-card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.product-card img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+.product-card button {
+  background-color: #1e90ff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.product-card button:hover {
+  background-color: #3742fa;
+}
+
+.checkout-page {
+    text-align: center;
+    margin: 50px 0;
+}
+
+.checkout-page h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.checkout-page p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+.checkout-page .btn {
+    margin-top: 20px;
+    font-size: 1rem;
+}
+/* Basic nav styling */
+/* Navbar container */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1a1a1a; /* dark background */
+    padding: 10px 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Left side (brand) */
+.nav-left .brand {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Right side links */
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Greeting text */
+.nav-right .greeting {
+    color: #fff;
+    margin-right: 15px;
+    font-weight: 500;
+}
+
+/* Links styling */
+.nav-right a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 15px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect */
+.nav-right a:hover {
+    color: #ffcb05;
+}
+
+/* Cart icon spacing */
+.nav-right a.cart-link i {
+    margin-right: 5px;
+}
+
+/* Responsive: stack items on small screens */
+@media (max-width: 600px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    
+
+    .nav-right a, .nav-right .greeting {
+        margin: 5px 0;
+    }
+}
+
+.cart-badge {
+  background-color: #ff4757;
+  color: white;
+  border-radius: 50%;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+ /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #311010;
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+        
+        }
+
+        @media (max-width: 600px) {
+            .search-bar input {
+                width: 120px;
+            }
+        }
+        /* Admin Dashboard Tables */
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f6ff; /* light blue for contrast */
+}
+
+.table th {
+    background-color: #1e90ff;
+    color: #fff;
+    font-weight: 600;
+}
+
+.table td {
+    color: #333;
+}
+.table tbody tr:hover {
+    background-color: #dbeaff;
+}
+
+/* Admin Buttons */
+.btn-primary {
+    background-color: #1e90ff;
+    border-color: #1e90ff;
+}
+
+.btn-primary:hover {
+    background-color: #3742fa;
+    border-color: #3742fa;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+.btn-danger {
+    background-color: #ff4757;
+    border-color: #ff4757;
+}
+
+.btn-danger:hover {
+    background-color: #e84118;
+    border-color: #e84118;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: #fff;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+/* Modal Styling */
+.modal-header {
+    background-color: #1e90ff;
+    color: #fff;
+    font-weight: 600;
+}
+
+.modal-footer {
+    border-top: 1px solid #ddd;
+}
+
+/* Responsive tweaks for modals */
+@media (max-width: 768px) {
+    .modal-dialog {
+        max-width: 95%;
+    }
+    .table td, .table th {
+        font-size: 0.9rem;
+    }
+}
+.status-processed {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.status-pending {
+    color: #ffc107;
+    font-weight: bold;
+}
