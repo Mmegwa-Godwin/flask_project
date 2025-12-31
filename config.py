@@ -36,3 +36,4 @@ class Config:
     # -------------------
     OPAY_MERCHANT_ID = os.getenv("OPAY_MERCHANT_ID")
     OPAY_API_KEY = os.getenv("OPAY_API_KEY")
+    OPAY_ENVIRONMENT = os.getenv("OPAY_ENVIRONMENT", "sandbox")  # or 'live'
