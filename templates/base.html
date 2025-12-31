@@ -60,9 +60,11 @@
             {% set total_price = total_price + (item.quantity * item.product.price) %}
           {% endfor %}
         {% endif %}
-
-        <a href="{{ url_for('shop.view_cart') }}" class="btn btn-primary position-relative me-2">
-          <i class="fas fa-shopping-cart"></i> Cart
+    
+        <a href="{{ url_for('shop.cart') }}" class="btn btn-outline-primary position-relative me-3">
+          <i class="fas fa-shopping-cart"></i>
+          Cart ({{ g.cart_count }})
+        </a>
           {% if total_qty > 0 %}
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
               {{ total_qty }} - ₦{{ "{:,.2f}".format(total_price) }}
