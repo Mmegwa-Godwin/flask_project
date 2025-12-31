@@ -12,7 +12,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'users.login'  # redirect if not logged in
-    migrate = Migrate(app, db)
+    Migrate(app, db)
 
     # Register blueprints
     from routes.shop import shop_bp
