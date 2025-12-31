@@ -39,27 +39,28 @@ def dashboard():
 # ---------------------------
 @admin_bp.route("/products/add", methods=["GET", "POST"])
 @admin_required
+@admin_bp.route("/products/add", methods=["GET", "POST"])
+@admin_required
 def add_product():
     if request.method == "POST":
         name = request.form["name"]
         price = float(request.form["price"])
-        image = request.files.get("image")
+        image = request.form.get("image", "")
 
-        if image:
-            filename = secure_filename(image.filename)
-            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            image_url = f"uploads/{filename}"
-        else:
-            image_url = ""
+        product = Product(
+            name=name,
+            price=price,
+            image=image
+        )
 
-        product = Product(name=name, price=price, image_url=image_url)
         db.session.add(product)
         db.session.commit()
-
+        
         flash("Product added successfully!", "success")
         return redirect(url_for("admin.dashboard"))
 
     return render_template("admin/add_product.html")
+
 
 # ---------------------------
 # Edit Product
