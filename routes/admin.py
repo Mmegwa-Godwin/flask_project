@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, current_app, render_template, redirect, url_for, request, flash
-from flask_login import current_user, login_required, login_user, logout_user
+from extensions import current_user, login_required, login_user, logout_user
 <<<<<<< HEAD
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
