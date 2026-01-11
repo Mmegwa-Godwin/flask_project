@@ -1,12 +1,41 @@
 {% extends "base.html" %}
+{% block title %}Checkout - Flask Shop{% endblock %}
 
 {% block content %}
-<div class="checkout-page">
-    <h1>Checkout Complete!</h1>
-    <p>Your order total was: <strong>${{ "%.2f"|format(total) }}</strong></p>
-    <p>Thank you for shopping with us!</p>
-    <a href="{{ url_for('shop.index') }}" class="btn btn-success">
-        <i class="fas fa-arrow-left"></i> Back to Shop
-    </a>
-</div>
+<h1 class="mb-4">Checkout</h1>
+
+{% if cart_items %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₦{{ "{:,.2f}".format(item.product.price) }}</td>
+            <td>₦{{ "{:,.2f}".format(item.product.price * item.quantity) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><strong>Total Quantity:</strong> {{ total_qty }}</p>
+<p><strong>Total Price:</strong> ₦{{ "{:,.2f}".format(total_price) }}</p>
+
+<form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="btn btn-success">Place Order</button>
+    <a href="{{ url_for('shop.view_cart') }}" class="btn btn-secondary">Back to Cart</a>
+</form>
+
+{% else %}
+<p>Your cart is empty. <a href="{{ url_for('shop.index') }}">Go shopping!</a></p>
+{% endif %}
 {% endblock %}

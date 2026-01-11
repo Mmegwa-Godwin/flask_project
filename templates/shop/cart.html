@@ -1,50 +1,28 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h1><i class="fas fa-shopping-cart"></i> Your cart</h1>
+<h1>Your Cart</h1>
 
 {% if products %}
 <table>
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-            <th>Remove</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% set total = 0 %}
-        {% for item in products %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>₦{{ "{:,.2f}".format(item.product.price) }}</td>
-            <td>₦{{ "{:,.2f}".format(item.product.price * item.quantity) }}</td>
-            <td><a href="{{ url_for('shop.remove_from_cart', product_id=item.product.id) }}">X</a></td>
-        </tr>
-        {% set total = total + (item.product.price * item.quantity) %}
-        {% endfor %}
-    </tbody>
+  <tr>
+    <th>Product</th>
+    <th>Price</th>
+    <th>Quantity</th>
+    <th>Subtotal</th>
+  </tr>
+  {% for item in products %}
+  <tr>
+    <td>{{ item.product.name }}</td>
+    <td>${{ item.product.price }}</td>
+    <td>{{ item.quantity }}</td>
+    <td>${{ item.product.price * item.quantity }}</td>
+  </tr>
+  {% endfor %}
 </table>
 
-<p><strong>Total: ₦{{ "{:,.2f}".format(total) }}</strong></p>
+<p>Total: ${{ total }}</p>
+<a href="{{ url_for('shop.checkout') }}">Checkout</a>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class="flashes">
-        {% for category, message in messages %}
-            <li class="flash-{{ category }}">{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
-
-<a href="{{ url_for('shop.checkout') }}" class="btn btn-primary">Checkout</a>
-<a href="{{ url_for('shop.add_to_cart', product_id=product.id) }}" class="btn btn-primary">
-    Add to Cart
-</a>
 {% else %}
 <p>Your cart is empty.</p>
 {% endif %}

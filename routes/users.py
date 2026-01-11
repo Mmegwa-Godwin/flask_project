@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
 from extensions import db, login_manager
 from models.user import User
@@ -11,7 +11,7 @@ users_bp = Blueprint('users', __name__, url_prefix='/users')
 # ---------------------------
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 # ---------------------------
 # Signup
@@ -23,15 +23,13 @@ def signup():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Check for existing user
-        if User.query.filter((User.username == username) | (User.email == email)).first():
+        if User.query.filter((User.username==username)|(User.email==email)).first():
             flash("Username or email already exists.", "danger")
             return redirect(url_for('users.signup'))
 
-        new_user = User(username=username, email=email)
-        new_user.set_password(password)
-
-        db.session.add(new_user)
+        user = User(username=username, email=email)
+        user.set_password(password)
+        db.session.add(user)
         db.session.commit()
 
         flash("Account created successfully!", "success")
@@ -49,26 +47,25 @@ def login():
         password = request.form.get('password')
 
         user = User.query.filter_by(username=username).first()
-
         if user and user.check_password(password):
             login_user(user)
 
-            # Merge session cart into DB cart
+            # Merge session cart
             session_cart = session.get("cart", {})
             if session_cart:
-                cart = Cart.query.filter_by(user_id=user.id).first()
+                cart = user.cart
                 if not cart:
-                    cart = Cart(user_id=user.id)
+                    cart = Cart(user=user)
                     db.session.add(cart)
                     db.session.commit()
 
-                for pid, qty in session_cart.items():
-                    pid = int(pid)
-                    item = CartItem.query.filter_by(cart_id=cart.id, product_id=pid).first()
+                for pid_str, qty in session_cart.items():
+                    pid = int(pid_str)
+                    item = next((i for i in cart.items_in_cart if i.product_id==pid), None)
                     if item:
                         item.quantity += qty
                     else:
-                        db.session.add(CartItem(cart_id=cart.id, product_id=pid, quantity=qty))
+                        cart.items_in_cart.append(CartItem(product_id=pid, quantity=qty))
 
                 db.session.commit()
                 session.pop("cart")

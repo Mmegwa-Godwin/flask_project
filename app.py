@@ -1,8 +1,6 @@
 from flask import Flask
-from config import Config
-from extensions import db, login_manager
-from flask_migrate import Migrate # pyright: ignore[reportMissingModuleSource]
-
+from extensions import db, login_manager, csrf
+from settings import Config
 
 def create_app():
     app = Flask(__name__)
@@ -11,18 +9,23 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = 'users.login'  # redirect if not logged in
-    Migrate(app, db)
+    login_manager.login_view = "users.login"
+    csrf.init_app(app)
+
+    # Import blueprints here AFTER extensions are initialized
+    from routes.admin import admin_bp
+    from routes.users import users_bp
+    from routes.shop import shop_bp
 
     # Register blueprints
-    from routes.shop import shop_bp
-    from routes.users import users_bp
-    from routes.admin import admin_bp
+
     app.register_blueprint(admin_bp)
-    app.register_blueprint(shop_bp)
+    
     app.register_blueprint(users_bp)
+    app.register_blueprint(shop_bp)
 
     return app
+
 
 if __name__ == "__main__":
     app = create_app()

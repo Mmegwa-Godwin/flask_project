@@ -1,14 +1,14 @@
 from extensions import db
-from datetime import datetime
+
 
 class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    ...
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    total_amount = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(50), default='Pending')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    items = db.relationship('OrderItem', backref='order', lazy=True)
-    delivery_status = db.Column(db.String(50), default="Pending")  # Pending, Shipped, Delivered
+
+    user = db.relationship(
+        'User',
+        back_populates='orders'
+    )
 
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,16 +1,15 @@
 import os
 from flask import Blueprint, current_app, render_template, redirect, url_for, request, flash
-from flask_login import current_user, login_required
-from werkzeug.utils import secure_filename
-from extensions import db
-from models.product import Product
-from models.order import Order
-from models.user import User
-from routes.users import load_user
+from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
+from extensions import db, csrf
+from models.product import Product
+from models.order import Order, OrderItem
+from models.user import User
 from functools import wraps
 
-admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+admin_bp = Blueprint("admin", __name__, url_prefix="/admin", template_folder="templates")
 
 # ---------------------------
 # Admin Access Decorator
@@ -20,9 +19,37 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated or not getattr(current_user, "is_admin", False):
             flash("Admin access required.", "danger")
-            return redirect(url_for("users.login"))
+            return redirect(url_for("admin.admin_login"))
         return f(*args, **kwargs)
     return decorated_function
+
+# ---------------------------
+# Admin Login
+# ---------------------------
+@admin_bp.route("/login", methods=["GET", "POST"])
+@csrf.exempt
+def admin_login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        user = User.query.filter_by(username=username).first()
+        if user and user.is_admin and user.check_password(password):
+            login_user(user)
+            flash("Logged in successfully!", "success")
+            return redirect(url_for("admin.dashboard"))
+        flash("Invalid credentials or not an admin", "danger")
+        return redirect(url_for("admin.admin_login"))
+    return render_template("admin/admin_login.html")
+
+# ---------------------------
+# Admin Logout
+# ---------------------------
+@admin_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out successfully.", "success")
+    return redirect(url_for("admin.admin_login"))
 
 # ---------------------------
 # Admin Dashboard
@@ -39,28 +66,25 @@ def dashboard():
 # ---------------------------
 @admin_bp.route("/products/add", methods=["GET", "POST"])
 @admin_required
-@admin_bp.route("/products/add", methods=["GET", "POST"])
-@admin_required
 def add_product():
     if request.method == "POST":
-        name = request.form["name"]
-        price = float(request.form["price"])
-        image = request.form.get("image", "")
+        name = request.form.get("name")
+        price = float(request.form.get("price"))
+        image_file = request.files.get("image")
 
-        product = Product(
-            name=name,
-            price=price,
-            image=image
-        )
+        product = Product(name=name, price=price)
+
+        if image_file:
+            filename = secure_filename(image_file.filename)
+            image_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            product.image = f"uploads/{filename}"
 
         db.session.add(product)
         db.session.commit()
-        
         flash("Product added successfully!", "success")
         return redirect(url_for("admin.dashboard"))
 
     return render_template("admin/add_product.html")
-
 
 # ---------------------------
 # Edit Product
@@ -70,19 +94,16 @@ def add_product():
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
     if request.method == "POST":
-        product.name = request.form["name"]
-        product.price = float(request.form["price"])
-        image = request.files.get("image")
-
-        if image:
-            filename = secure_filename(image.filename)
-            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            product.image_url = f"uploads/{filename}"
-
+        product.name = request.form.get("name")
+        product.price = float(request.form.get("price"))
+        image_file = request.files.get("image")
+        if image_file:
+            filename = secure_filename(image_file.filename)
+            image_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            product.image = f"uploads/{filename}"
         db.session.commit()
         flash("Product updated successfully!", "success")
         return redirect(url_for("admin.dashboard"))
-
     return render_template("admin/edit_product.html", product=product)
 
 # ---------------------------
@@ -122,20 +143,10 @@ def deliver_order(order_id):
     return redirect(url_for("admin.dashboard"))
 
 # ---------------------------
-# Admin Login
+# View Order Details
 # ---------------------------
-@admin_bp.route("/login", methods=["GET", "POST"])
-def admin_login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
-
-        if user and user.is_admin and check_password_hash(user.pwd_hash, password):
-            load_user(user)
-            return redirect(url_for("admin.dashboard"))
-        else:
-            flash("Invalid credentials or not an admin", "danger")
-            return redirect(url_for("admin.admin_login"))
-
-    return render_template("admin/admin_login.html")
+@admin_bp.route("/orders/<int:order_id>")
+@admin_required
+def view_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    return render_template("admin/order_details.html", order=order)

@@ -1,21 +1,25 @@
 {% extends "base.html" %}
-
 {% block content %}
 <h1>Your Orders</h1>
+
 {% if orders %}
-    {% for order in orders %}
-    <div class="order-card">
-        <h3>Order #{{ order.id }} - ${{ "%.2f"|format(order.total_amount) }}</h3>
-        <p>Status: {{ order.status }}</p>
-        <p>Placed on: {{ order.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
-        <ul>
-            {% for item in order.items %}
-            <li>{{ item.product.name }} - {{ item.quantity }} × ${{ "%.2f"|format(item.price) }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endfor %}
+  {% for order in orders %}
+  <div class="order-card">
+    <h3>Order #{{ order.id }} - {{ order.status }}</h3>
+    <p>Placed on: {{ order.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p>Delivery: {{ order.delivery_status }}</p>
+    <ul>
+      {% for item in order.items %}
+        <li>{{ item.product.name }} - ${{ item.price }} x {{ item.quantity }}</li>
+      {% endfor %}
+    </ul>
+    <p>Total: ${{ order.total_amount }}</p>
+    {% if order.status != 'Paid' %}
+      <a href="{{ url_for('shop.pay', order_id=order.id) }}">Pay Now</a>
+    {% endif %}
+  </div>
+  {% endfor %}
 {% else %}
-    <p>You have no orders yet.</p>
+<p>You have no orders yet.</p>
 {% endif %}
 {% endblock %}

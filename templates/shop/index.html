@@ -1,17 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Shop</h1>
-<div class="products-grid">
-    {% for product in products %}
-    <div class="product-card">
-    <img src="{{ url_for('static', filename='images/headphone.jpg') }}" alt="headphone"style="max-width:200px; height:auto;">
-        <h3>{{ product.name }}</h3>
-        <p>₦{{ "{:,.2f}".format(product.price) }}</p>
-        <p>{{ product.description }}</p>
-<a href="{{ url_for('shop.add_to_cart', product_id=product.id) }}" class="btn btn-primary">
-    Add to Cart
-</a>
-    </div>
-    {% endfor %}
+<h1>Products</h1>
+<div class="products">
+  {% for product in products %}
+  <div class="product-card">
+    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+    <h3>{{ product.name }}</h3>
+    <p>${{ product.price }}</p>
+    <form action="{{ url_for('shop.add_to_cart', product_id=product.id) }}" method="POST">
+      <button type="submit">Add to Cart</button>
+    </form>
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}
