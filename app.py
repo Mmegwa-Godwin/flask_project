@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from config import Config
 from extensions import db, login_manager
@@ -24,6 +25,9 @@ def create_app():
 
     return app
 
+
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "false").lower() in ("1", "true", "yes")
+    app.run(host="0.0.0.0", port=port, debug=debug)
