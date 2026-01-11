@@ -4,4 +4,4 @@ from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-csrf = CSRFProtect()  # ✅ instance, not the class
+csrf = CSRFProtect()

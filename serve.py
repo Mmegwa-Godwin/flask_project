@@ -1,5 +1,5 @@
 # serve.py
-from waitress import serve
+from waitress import serve # pyright: ignore[reportMissingModuleSource]
 from app import create_app
 
 app = create_app()
