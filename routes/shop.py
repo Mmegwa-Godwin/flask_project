@@ -5,6 +5,7 @@ from models.cart import Cart, CartItem
 from models.order import Order, OrderItem
 from extensions import db
 import requests
+from flask import has_request_context
 
 shop_bp = Blueprint('shop', __name__)
 
@@ -69,6 +70,15 @@ def cart():
 # ---------------------------
 # Load Cart Count for Navbar
 # ---------------------------
+
+# Wrap the existing hook
+def safe_before_app_request(fn):
+    def wrapper(*args, **kwargs):
+        if not has_request_context():
+            return  # skip if no request (Render safe)
+        return fn(*args, **kwargs)
+    return wrapper
+    
 @shop_bp.before_app_request
 def load_cart_count():
     g.cart_count = 0
