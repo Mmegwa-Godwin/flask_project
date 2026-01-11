@@ -1,0 +1,104 @@
+import pytest
+from flask import Flask
+from flask_login import LoginManager
+from extensions import db
+from models.user import User
+from models.product import Product
+from models.cart import Cart, CartItem
+from models.order import Order, OrderItem
+from models.payment import Payment
+from shop.routes import shop_bp
+from users.routes import users_bp
+from admin.routes import admin_bp
+
+
+@pytest.fixture(scope="session")
+def app():
+    """
+    Create a Flask app for testing with in-memory SQLite DB.
+    Registers blueprints and sets up test data.
+    """
+    app = Flask(__name__)
+    app.config.update(
+        TESTING=True,
+        SECRET_KEY="test-secret",
+        SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        LOGIN_DISABLED=True,  # disables @login_required for tests
+    )
+
+    # Initialize extensions
+    db.init_app(app)
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    # Register blueprints
+    app.register_blueprint(users_bp)
+    app.register_blueprint(shop_bp)
+    app.register_blueprint(admin_bp)
+
+    with app.app_context():
+        db.create_all()
+        yield app
+        db.drop_all()
+
+
+@pytest.fixture
+def client(app):
+    """Flask test client for making requests."""
+    return app.test_client()
+
+
+@pytest.fixture
+def admin_user(app):
+    """Create an admin user for testing admin routes."""
+    user = User(username="admin", email="admin@test.com", is_admin=True)
+    user.set_password("password")
+    db.session.add(user)
+    db.session.commit()
+    return user
+
+
+@pytest.fixture
+def normal_user(app):
+    """Create a normal user for testing."""
+    user = User(username="user", email="user@test.com")
+    user.set_password("password")
+    db.session.add(user)
+    db.session.commit()
+    return user
+
+
+@pytest.fixture
+def sample_product(app):
+    """Create a sample product for tests."""
+    product = Product(name="Test Product", price=1000)
+    db.session.add(product)
+    db.session.commit()
+    return product
+
+
+@pytest.fixture
+def sample_order(app, normal_user, sample_product):
+    """Create a sample order for a user."""
+    order = Order(user_id=normal_user.id, total_amount=1000)
+    db.session.add(order)
+    db.session.commit()
+
+    item = OrderItem(order_id=order.id, product_id=sample_product.id, quantity=1, price=1000)
+    db.session.add(item)
+    db.session.commit()
+    return order
+
+
+@pytest.fixture
+def sample_cart(app, normal_user, sample_product):
+    """Create a sample cart for a user."""
+    cart = Cart(user_id=normal_user.id)
+    db.session.add(cart)
+    db.session.commit()
+
+    item = CartItem(cart_id=cart.id, product_id=sample_product.id, quantity=1)
+    db.session.add(item)
+    db.session.commit()
+    return cart

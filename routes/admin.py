@@ -1,11 +1,18 @@
 import os
 from flask import Blueprint, current_app, render_template, redirect, url_for, request, flash
 from flask_login import current_user, login_required, login_user, logout_user
+<<<<<<< HEAD
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from extensions import db, csrf
 from models.product import Product
 from models.order import Order, OrderItem
+=======
+from werkzeug.utils import secure_filename
+from extensions import db
+from models.product import Product
+from models.order import Order
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
 from models.user import User
 from functools import wraps
 
@@ -17,7 +24,7 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin", template_folder="te
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or not getattr(current_user, "is_admin", False):
+        if not getattr(current_user, "is_authenticated", False) or not getattr(current_user, "is_admin", False):
             flash("Admin access required.", "danger")
             return redirect(url_for("admin.admin_login"))
         return f(*args, **kwargs)
@@ -27,7 +34,10 @@ def admin_required(f):
 # Admin Login
 # ---------------------------
 @admin_bp.route("/login", methods=["GET", "POST"])
+<<<<<<< HEAD
 @csrf.exempt
+=======
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
 def admin_login():
     if request.method == "POST":
         username = request.form.get("username")
@@ -37,8 +47,14 @@ def admin_login():
             login_user(user)
             flash("Logged in successfully!", "success")
             return redirect(url_for("admin.dashboard"))
+<<<<<<< HEAD
         flash("Invalid credentials or not an admin", "danger")
         return redirect(url_for("admin.admin_login"))
+=======
+        else:
+            flash("Invalid credentials or not an admin", "danger")
+            return redirect(url_for("admin.admin_login"))
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
     return render_template("admin/admin_login.html")
 
 # ---------------------------
@@ -48,11 +64,19 @@ def admin_login():
 @login_required
 def logout():
     logout_user()
+<<<<<<< HEAD
     flash("Logged out successfully.", "success")
     return redirect(url_for("admin.admin_login"))
 
 # ---------------------------
 # Admin Dashboard
+=======
+    flash("Logged out successfully.", "info")
+    return redirect(url_for("admin.admin_login"))
+
+# ---------------------------
+# Dashboard
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
 # ---------------------------
 @admin_bp.route("/")
 @admin_required
@@ -69,7 +93,11 @@ def dashboard():
 def add_product():
     if request.method == "POST":
         name = request.form.get("name")
+<<<<<<< HEAD
         price = float(request.form.get("price"))
+=======
+        price = float(request.form.get("price", 0))
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
         image_file = request.files.get("image")
 
         product = Product(name=name, price=price)
@@ -94,13 +122,23 @@ def add_product():
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
     if request.method == "POST":
+<<<<<<< HEAD
         product.name = request.form.get("name")
         product.price = float(request.form.get("price"))
+=======
+        product.name = request.form.get("name", product.name)
+        product.price = float(request.form.get("price", product.price))
+
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
         image_file = request.files.get("image")
         if image_file:
             filename = secure_filename(image_file.filename)
             image_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             product.image = f"uploads/{filename}"
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
         db.session.commit()
         flash("Product updated successfully!", "success")
         return redirect(url_for("admin.dashboard"))
@@ -150,3 +188,7 @@ def deliver_order(order_id):
 def view_order(order_id):
     order = Order.query.get_or_404(order_id)
     return render_template("admin/order_details.html", order=order)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1ffaa6aa9f9629ca5a1ba5494dcad47d2fee9c95
